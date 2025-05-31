@@ -1,230 +1,422 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Block Blast Basit Oyun</title>
-<style>
-  body {
-    margin: 0; padding: 0;
-    background: #222;
-    color: white;
-    font-family: monospace;
-    text-align: center;
-    user-select: none;
-  }
-  #score {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    font-size: 20px;
-    font-weight: bold;
-  }
-  #game {
-    margin: 60px auto;
-    display: grid;
-    grid-template-columns: repeat(8, 50px);
-    grid-template-rows: repeat(8, 50px);
-    gap: 4px;
-    width: max-content;
-    touch-action: none;
-  }
-  .block {
-    width: 50px;
-    height: 50px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
-  .selected {
-    outline: 3px solid white;
-    transform: scale(1.1);
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HD İZLE</title>
+    
+    <!-- Favicon Ekleme -->
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/128/860/860780.png" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <marquee behavior="scroll" direction="left" scrollamount="5" onmouseover="this.stop();" onmouseout="this.start();">
+        <font color="blue" size="5">
+            Teknik Arızada Veya Kafanıza Takılan Soru Olursa İnstagram Hesabımdan Bana Ulaşabilirsiniz Keyifli Seyirler Dilerim...
+        </font>
+        &nbsp;&nbsp;&nbsp;
+        <a href="https://instagram.com/berkaktxs" target="_blank" style="text-decoration: none;">
+            <font color="purple" size="5">İnstagram Hesabım:</font>
+            <font color="white" size="5">berkaktxs</font>
+        </a> &nbsp;&nbsp;&nbsp;
+    </marquee>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/128/860/860780.png" type="image/png">
+    <title>Giriş Yap</title>
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            text-align: center;
+        }
+
+        .login-container {
+            margin-top: 100px;
+        }
+
+        .hd-izle-container {
+            margin-top: 100px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: rgb(61, 60, 60);
+            color: rgb(255, 255, 255);
+            border: none;
+            cursor: pointer;
+        }
+
+        #main-content {
+            display: none;
+        }
+
+        .hd-izle {
+            font-weight: 700;
+            font-size: 40px;
+            background: linear-gradient(-45deg, #f80101 0, #f80101 10%, #fff 20%, #f80101 30%, #f80101 40%, #f80101 50%, #fff 60%, #f80101 70%, #f80101 80%, #f80101 90%, #fff 100%);
+            animation: animx 5s infinite linear;
+            text-shadow: 0 0 12px #f21e1e;
+            color: #fff;
+            background-size: 200% 100%;
+            background-position: 0 50%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        @keyframes animx {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        h1 {
+    animation: animx 1s infinite linear;
+           }
+
+
+h1 {
+    animation: animx 4s infinite linear;
+    display: inline-block;
+    transition: transform 0.3s;
+}
+
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .film {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .film:hover {
+            transform: scale(1.05);
+        }
+
+        .film img {
+            width: 190px;
+            height: 160px;
+            border-radius: 10px;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .film h3 {
+            margin-top: 10px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background: rgb(0, 183, 255);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        #group-container, .channel-container {
+            display: none;
+            padding: 20px;
+        }
+
+        iframe {
+            width: 80%;
+            height: 400px;
+            border-radius: 10px;
+        }
+
+        .footer {
+            background: #1e1e1e;
+            padding: 15px;
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            margin: 0 10px;
+        }
+
+        #logout-container {
+            display: none;
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #logout-btn {
+            background-color: red;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #logout-container {
+            display: none;
+        }
+        #logout-container {
+        position: fixed;
+        bottom: 20px; /* Alt kısımdan 20px uzaklık */
+        left: 50%;
+        transform: translateX(-50%);
+        display: none;
+        z-index: 999; /* Diğer öğelerin üzerine gelmesini sağlar */
+                          }
+
+    </style>
 </head>
-<body>
+<body oncontextmenu="return false;" onkeydown="return disableInspect();">
 
-<div id="score">Skor: 0</div>
-<div id="game"></div>
+    <!-- Giriş Formu -->
+    <div id="login-form" class="login-container">
+        <body bgcolor="black" text="white">
 
-<script>
-const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22'];
-const rows = 8;
-const cols = 8;
-let board = [];
-let score = 0;
-let firstSelected = null;
-const gameEl = document.getElementById('game');
-const scoreEl = document.getElementById('score');
+            <h1 class="hd-izle" align="center">HD</h1>
+            <h1 class="hd-izle" align="center">İZLE</h1>
+        
+        </body>
+        <h2>Giriş Yap</h2>
+        <input type="text" id="username" placeholder="Kullanıcı Adı" required><br>
+        <input type="password" id="password" placeholder="Şifre" required><br>
+        <button onclick="login()">Giriş Yap</button>
+        <p id="error-message" style="color: red;"></p> 
+    </div>
 
-function randomColor() {
-  return Math.floor(Math.random() * colors.length);
-}
+    <!-- Ana İçerik -->
+    <div id="main-content" style="display:none;">
+        <body bgcolor="black" text="white">
 
-function initBoard() {
-  board = [];
-  for(let r=0; r<rows; r++) {
-    const row = [];
-    for(let c=0; c<cols; c++) {
-      row.push(randomColor());
-    }
-    board.push(row);
-  }
-  // Patlamaya hazır olanları kaldır (başlangıçta)
-  while (findMatches().length > 0) {
-    removeMatches();
-    applyGravity();
-    refillBoard();
-  }
-}
+            <h1 class="hd-izle" align="center">HD</h1>
+            <h1 class="hd-izle" align="center">İZLE</h1>
+        
+        </body>
 
-function drawBoard() {
-  gameEl.innerHTML = '';
-  for(let r=0; r<rows; r++) {
-    for(let c=0; c<cols; c++) {
-      const block = document.createElement('div');
-      block.classList.add('block');
-      block.style.backgroundColor = colors[board[r][c]];
-      block.dataset.r = r;
-      block.dataset.c = c;
-      block.addEventListener('click', () => onBlockClick(r, c));
-      gameEl.appendChild(block);
-    }
-  }
-}
+        <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sosyal Medya</title>
 
-function onBlockClick(r, c) {
-  if(firstSelected === null) {
-    firstSelected = {r,c};
-    highlightBlock(r,c,true);
-  } else {
-    if(isAdjacent(firstSelected, {r,c})) {
-      swapBlocks(firstSelected, {r,c});
-      if(findMatches().length > 0) {
-        processMatches();
-      } else {
-        // Geçerli hamle değil, geri al
-        swapBlocks(firstSelected, {r,c});
-      }
-    }
-    highlightBlock(firstSelected.r, firstSelected.c, false);
-    firstSelected = null;
-  }
-}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Arka Plan Resmi</title>
+    </head>
 
-function highlightBlock(r,c,on) {
-  const blocks = gameEl.children;
-  for(let i=0; i<blocks.length; i++) {
-    const b = blocks[i];
-    if(+b.dataset.r === r && +b.dataset.c === c) {
-      if(on) b.classList.add('selected');
-      else b.classList.remove('selected');
-      break;
-    }
-  }
-}
+    <body style="background-image: url('https://r.resimlink.com/f4c5UktrLS.png'); background-size: cover; background-position: center; background-repeat: no-repeat; height: 100vh; margin: 0; image-rendering: crisp-edges;">
+    </body>
+    
+    <body style="background-image: url('https://r.resimlink.com/f4c5UktrLS.png'); background-size: cover; background-position: center; background-repeat: no-repeat; height: 100vh; margin: 0;">
+    </body>
 
-function isAdjacent(a,b) {
-  return (Math.abs(a.r - b.r) + Math.abs(a.c - b.c)) === 1;
-}
+        <div id="group-list" class="container">
+            <div class="film" onclick="showGroup('tabii')">
+                <img src="https://r.resimlink.com/21QRmgyc.png" alt="Tabii">
+                <h3>Tabii</h3>
+            </div>
+            <div class="film" onclick="showGroup('ssport')">
+                <img src="https://r.resimlink.com/SCBuTkdPzeat.png" alt="Ssport">
+                <h3>S Sport Plus</h3>
+            </div>
+            <div class="film" onclick="showGroup('bein')">
+                <img src="https://r.resimlink.com/2z3XaQWHPjIg.png" alt="Bein Sports">
+                <h3>Bein Sports</h3>
+            </div>
+            <div class="film" onclick="showGroup('kanal')">
+                <img src="https://r.resimlink.com/wV48W2.png" alt="Kanal">
+                <h3>Canlı Kanallar</h3>
+            </div>
+        </div>
 
-function swapBlocks(a,b) {
-  const temp = board[a.r][a.c];
-  board[a.r][a.c] = board[b.r][b.c];
-  board[b.r][b.c] = temp;
-  drawBoard();
-}
+        <!-- Grup ve Kanal Seçimi -->
+        <div id="group-container">
+            <div id="channel-list" class="container"></div>
+            <button class="back-button" onclick="showHome()">Geri Dön</button>
+        </div>
 
-function findMatches() {
-  const matches = [];
+        <div id="channel-container" class="channel-container">
+            <h2 id="channel-title"></h2>
+            <iframe id="video-frame" src="" allowfullscreen></iframe>
+            <p id="channel-description"></p>
+            <button class="back-button" onclick="showGroup(currentGroup)">Geri Dön</button>
+        </div>
 
-  // Yatay kontrol
-  for(let r=0; r<rows; r++) {
-    let count = 1;
-    for(let c=1; c<cols; c++) {
-      if(board[r][c] === board[r][c-1]) {
-        count++;
-      } else {
-        if(count >= 3) {
-          for(let k=c-count; k<c; k++) matches.push([r,k]);
+        <!-- Çıkış Butonu -->
+        <div id="logout-container">
+            <button id="logout-btn" onclick="logout()">Çıkış Yap</button>
+        </div>
+    </div>
+
+    <script>
+
+        
+        const users = {
+            "BJK": "262b06d105e1c865b01c3e0a74291cdae511ef15f3d456e14fbe2dffd9efe3b9",   
+            "Admin": "262b06d105e1c865b01c3e0a74291cdae511ef15f3d456e14fbe2dffd9efe3b9"
+        };
+
+        let currentGroup = "";
+
+        // Kullanıcı Girişi 
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
         }
-        count = 1;
-      }
-    }
-    if(count >=3) {
-      for(let k=cols-count; k<cols; k++) matches.push([r,k]);
-    }
-  }
-  // Dikey kontrol
-  for(let c=0; c<cols; c++) {
-    let count = 1;
-    for(let r=1; r<rows; r++) {
-      if(board[r][c] === board[r-1][c]) {
-        count++;
-      } else {
-        if(count >=3) {
-          for(let k=r-count; k<r; k++) matches.push([k,c]);
+
+        async function login() {
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            let hashedPassword = await hashPassword(password);
+
+            if (users[username] && users[username] === hashedPassword) {
+                localStorage.setItem("loggedIn", "true");
+                document.getElementById("login-form").style.display = "none";
+                document.getElementById("main-content").style.display = "block";
+                document.getElementById("logout-container").style.display = "block"; // Çıkış butonunu göster
+            } else {
+                document.getElementById("error-message").innerText = "Hatalı kullanıcı adı veya şifre!";
+            }
         }
-        count=1;
-      }
-    }
-    if(count >=3) {
-      for(let k=rows-count; k<rows; k++) matches.push([k,c]);
-    }
-  }
-  return matches;
-}
+        
 
-function removeMatches() {
-  const matches = findMatches();
-  if(matches.length === 0) return false;
-  for(const [r,c] of matches) {
-    board[r][c] = null;
-  }
-  score += matches.length * 10;
-  scoreEl.textContent = 'Skor: ' + score;
-  return true;
-}
-
-function applyGravity() {
-  for(let c=0; c<cols; c++) {
-    for(let r=rows-1; r>=0; r--) {
-      if(board[r][c] === null) {
-        for(let rr=r-1; rr>=0; rr--) {
-          if(board[rr][c] !== null) {
-            board[r][c] = board[rr][c];
-            board[rr][c] = null;
-            break;
-          }
+        function logout() {
+            localStorage.removeItem("loggedIn");
+            document.getElementById("login-form").style.display = "block";
+            document.getElementById("main-content").style.display = "none";
+            document.getElementById("logout-container").style.display = "none"; // Çıkış butonunu gizle
         }
-      }
-    }
-  }
-}
 
-function refillBoard() {
-  for(let r=0; r<rows; r++) {
-    for(let c=0; c<cols; c++) {
-      if(board[r][c] === null) {
-        board[r][c] = randomColor();
-      }
-    }
-  }
-}
+        // Sayfa yüklenince giriş durumu kontrol edilir
+        window.onload = function() {
+            if (localStorage.getItem("loggedIn") === "true") {
+                document.getElementById("login-form").style.display = "none";
+                document.getElementById("main-content").style.display = "block";
+                document.getElementById("logout-container").style.display = "block";
+            }
+        };
 
-function processMatches() {
-  if(removeMatches()) {
-    applyGravity();
-    refillBoard();
-    drawBoard();
-    // Biraz gecikmeli tekrar kontrol et (kaskad efekt)
-    setTimeout(processMatches, 300);
-  }
-}
+        function showGroup(groupName) {
+            currentGroup = groupName;
+            document.getElementById("group-list").style.display = "none";
+            document.getElementById("group-container").style.display = "block";
+            document.getElementById("channel-container").style.display = "none";
+            document.getElementById("logout-container").style.display = "none"; // Çıkış butonunu gizle
+            stopVideo();
 
-initBoard();
-drawBoard();
-</script>
+            const channelList = document.getElementById("channel-list");
+            channelList.innerHTML = "";
 
+            groups[groupName].forEach(channel => {
+                let channelDiv = document.createElement("div");
+                channelDiv.classList.add("film");
+                channelDiv.onclick = () => showChannel(channel);
+
+                let img = document.createElement("img");
+                img.src = channel.img;
+                img.alt = channel.title;
+
+                let title = document.createElement("h3");
+                title.innerText = channel.title;
+
+                channelDiv.appendChild(img);
+                channelDiv.appendChild(title);
+                channelList.appendChild(channelDiv);
+            });
+        }
+
+        function showChannel(channel) {
+            document.getElementById("group-container").style.display = "none";
+            document.getElementById("channel-container").style.display = "block";
+            document.getElementById("channel-title").innerText = channel.title;
+            document.getElementById("video-frame").src = channel.link;
+            document.getElementById("channel-description").innerText = channel.desc;
+            document.getElementById("logout-container").style.display = "none"; // Çıkış butonunu gizle
+        }
+
+        function showHome() {
+            document.getElementById("group-container").style.display = "none";
+            document.getElementById("channel-container").style.display = "none";
+            document.getElementById("group-list").style.display = "grid";
+            document.getElementById("logout-container").style.display = "block"; // Çıkış butonunu ana ekranda göster
+            stopVideo();
+        }
+
+        function stopVideo() {
+            let videoFrame = document.getElementById("video-frame");
+            videoFrame.src = "";
+        }
+
+        function disableInspect() {
+            if (event.keyCode == 123) {
+                return false;
+            } else if (event.ctrlKey && event.shiftKey && event.keyCode == 73) {
+                return false;
+            } else if (event.ctrlKey && event.keyCode == 85) {
+                return false;
+            }
+        }
+
+        // Video grupları ve kanal bilgileri 
+        const groups = {
+            tabii: [
+                { title: "Tabii Sports 1 ", img: "https://r.resimlink.com/21QRmgyc.png", link: "https://www.hlsplayer.org/play?url=https%3A%2F%2Fbeert7sqimrk0bfdupfgn6qew.medya.trt.com.tr%2Fmaster_1080p.m3u8", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "Tabii Sports 2 ", img: "https://r.resimlink.com/21QRmgyc.png", link: "https://www.hlsplayer.org/play?url=https%3A%2F%2Fiaqzu4szhtzeqd0edpsayinle.medya.trt.com.tr%2Fmaster_1080p.m3u8", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "Tabii Sports 3 ", img: "https://r.resimlink.com/21QRmgyc.png", link: "https://www.hlsplayer.org/play?url=https%3A%2F%2Fklublsslubcgyiz7zqt5bz8il.medya.trt.com.tr%2Fmaster_1080p.m3u8", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "Tabii Sports 4 ", img: "https://r.resimlink.com/21QRmgyc.png", link: "https://www.hlsplayer.org/play?url=https%3A%2F%2Fujnf69op16x2fiiywxcnx41q8.medya.trt.com.tr%2Fmaster_1080p.m3u8", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "Tabii Sports 5 ", img: "https://r.resimlink.com/21QRmgyc.png", link: "https://www.hlsplayer.org/play?url=https%3A%2F%2Fbfxy3jgeydpbphtk8qfqwm3hr.medya.trt.com.tr%2Fmaster_1080p.m3u8", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "Tabii Sports 6 ", img: "https://r.resimlink.com/21QRmgyc.png", link: "https://www.hlsplayer.org/play?url=https%3A%2F%2Fz3mmimwz148csv0vaxtphqspf.medya.trt.com.tr%2Fmaster_1080p.m3u8", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "Tabii Sports 7 ", img: "https://r.resimlink.com/21QRmgyc.png", link: "https://www.hlsplayer.org/play?url=https%3A%2F%2Fvbtob9hyq58eiophct5qctxr2.medya.trt.com.tr%2Fmaster_1080p.m3u8", desc: "Keyifli Seyirler Dilerim..." }
+            ],
+            ssport:[
+                { title: "S Sport Plus 1", img:  "https://r.resimlink.com/SCBuTkdPzeat.png", link: "https://trgoals1338.xyz/channel.html?id=yayinss", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "S Sport Plus 2", img:  "https://r.resimlink.com/SCBuTkdPzeat.png", link: "https://trgoals1338.xyz/channel.html?id=yayinss2", desc: "Keyifli Seyirler Dilerim..." }
+            ],
+            bein: [
+                { title: "Bein Sports 1 ", img: "https://r.resimlink.com/2z3XaQWHPjIg.png", link: "https://taraftarium.co/channel.html?id=yayinstar", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "Bein Sports 2 ", img: "https://r.resimlink.com/2z3XaQWHPjIg.png", link: "https://taraftarium.co/channel.html?id=yayinb2", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "Bein Sports 3 ", img: "https://r.resimlink.com/2z3XaQWHPjIg.png", link: "https://trgoals1338.xyz/channel.html?id=yayinb3", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "Bein Sports 4 ", img: "https://r.resimlink.com/2z3XaQWHPjIg.png", link: "https://trgoals1338.xyz/channel.html?id=yayinb4", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "Bein Sports 5 ", img: "https://r.resimlink.com/2z3XaQWHPjIg.png", link: "https://trgoals1338.xyz/channel.html?id=yayinb5", desc: "Keyifli Seyirler Dilerim..." }
+            ],
+            kanal: [
+                { title: "TRT1", img: "https://r.resimlink.com/OjxPSK_.png", link: "https://trgoals1338.xyz/channel.html?id=yayintrt1", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "TRT Spor", img:  "https://r.resimlink.com/9XlcLAh.png", link: "https://trgoals1338.xyz/channel.html?id=yayintrtspor", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "TV 8", img: "https://resmim.net/cdn/2025/05/01/NJbnmZ.jpg", link: "https://trgoals1338.xyz/channel.html?id=yayintv8", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "TV 8,5", img: "https://resmim.net/cdn/2025/05/02/NJew1Q.png", link: "https://trgoals1338.xyz/channel.html?id=yayintv85", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "A Spor", img: "https://r.resimlink.com/IcRomQLn07b.jpg", link: "https://trgoals1338.xyz/channel.html?id=yayinas", desc: "Keyifli Seyirler Dilerim..." },
+                { title: "TRT Spor Yıldız Canlı", img: "https://r.resimlink.com/vjkTtSm.png", link: "https://trgoals1338.xyz/channel.html?id=yayintrtspor2", desc: "Keyifli Seyirler Dilerim..." }
+            ]
+        };
+    </script>
+    
 </body>
 </html>
