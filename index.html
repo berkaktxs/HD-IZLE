@@ -2,73 +2,82 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8" />
-<title>Block Blast Benzeri Oyun</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Block Blast Basit Oyun</title>
 <style>
   body {
+    margin: 0; padding: 0;
     background: #222;
     color: white;
     font-family: monospace;
     text-align: center;
-    margin: 0; padding: 0;
+    user-select: none;
   }
-  #scoreboard {
+  #score {
     position: fixed;
-    top: 5px;
-    left: 5px;
-    font-size: 18px;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    font-weight: bold;
   }
   #game {
-    margin: 40px auto;
+    margin: 60px auto;
     display: grid;
     grid-template-columns: repeat(8, 50px);
     grid-template-rows: repeat(8, 50px);
-    gap: 3px;
+    gap: 4px;
     width: max-content;
+    touch-action: none;
   }
   .block {
     width: 50px;
     height: 50px;
     border-radius: 6px;
     cursor: pointer;
-    user-select: none;
-    transition: background-color 0.3s ease;
+    transition: transform 0.2s ease;
+  }
+  .selected {
+    outline: 3px solid white;
+    transform: scale(1.1);
   }
 </style>
 </head>
 <body>
-<h1>Block Blast Benzeri Oyun</h1>
-<div id="scoreboard">Skor: 0</div>
+
+<div id="score">Skor: 0</div>
 <div id="game"></div>
 
 <script>
 const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22'];
 const rows = 8;
 const cols = 8;
-let score = 0;
-
-const gameEl = document.getElementById('game');
-const scoreEl = document.getElementById('scoreboard');
-
-// Oyun tahtasını 2D dizi olarak tutacağız, her hücrede renk indeksi var
 let board = [];
+let score = 0;
+let firstSelected = null;
+const gameEl = document.getElementById('game');
+const scoreEl = document.getElementById('score');
 
-function randomColorIndex() {
+function randomColor() {
   return Math.floor(Math.random() * colors.length);
 }
 
-// Tahtayı doldur
 function initBoard() {
   board = [];
   for(let r=0; r<rows; r++) {
     const row = [];
     for(let c=0; c<cols; c++) {
-      row.push(randomColorIndex());
+      row.push(randomColor());
     }
     board.push(row);
   }
+  // Patlamaya hazır olanları kaldır (başlangıçta)
+  while (findMatches().length > 0) {
+    removeMatches();
+    applyGravity();
+    refillBoard();
+  }
 }
 
-// Tahtayı ekrana çiz
 function drawBoard() {
   gameEl.innerHTML = '';
   for(let r=0; r<rows; r++) {
@@ -84,52 +93,104 @@ function drawBoard() {
   }
 }
 
-// Yan yana aynı renkte blokları bul ve patlat
 function onBlockClick(r, c) {
-  const colorIndex = board[r][c];
-  const toRemove = [];
-  const visited = Array.from({length: rows}, () => Array(cols).fill(false));
-
-  function dfs(rr, cc) {
-    if(rr < 0 || rr >= rows || cc < 0 || cc >= cols) return;
-    if(visited[rr][cc]) return;
-    if(board[rr][cc] !== colorIndex) return;
-    visited[rr][cc] = true;
-    toRemove.push([rr, cc]);
-    dfs(rr-1, cc);
-    dfs(rr+1, cc);
-    dfs(rr, cc-1);
-    dfs(rr, cc+1);
+  if(firstSelected === null) {
+    firstSelected = {r,c};
+    highlightBlock(r,c,true);
+  } else {
+    if(isAdjacent(firstSelected, {r,c})) {
+      swapBlocks(firstSelected, {r,c});
+      if(findMatches().length > 0) {
+        processMatches();
+      } else {
+        // Geçerli hamle değil, geri al
+        swapBlocks(firstSelected, {r,c});
+      }
+    }
+    highlightBlock(firstSelected.r, firstSelected.c, false);
+    firstSelected = null;
   }
+}
 
-  dfs(r,c);
-
-  if(toRemove.length < 3) {
-    // 3 bloktan azsa patlatma
-    alert('En az 3 aynı renkte blok seçmelisin!');
-    return;
+function highlightBlock(r,c,on) {
+  const blocks = gameEl.children;
+  for(let i=0; i<blocks.length; i++) {
+    const b = blocks[i];
+    if(+b.dataset.r === r && +b.dataset.c === c) {
+      if(on) b.classList.add('selected');
+      else b.classList.remove('selected');
+      break;
+    }
   }
+}
 
-  // Patlat
-  for(const [rr, cc] of toRemove) {
-    board[rr][cc] = null; // boş
-  }
+function isAdjacent(a,b) {
+  return (Math.abs(a.r - b.r) + Math.abs(a.c - b.c)) === 1;
+}
 
-  score += toRemove.length * 10;
-  scoreEl.textContent = 'Skor: ' + score;
-
-  gravity();
-  refill();
+function swapBlocks(a,b) {
+  const temp = board[a.r][a.c];
+  board[a.r][a.c] = board[b.r][b.c];
+  board[b.r][b.c] = temp;
   drawBoard();
 }
 
-// Blokların aşağı kaymasını sağlar
-function gravity() {
+function findMatches() {
+  const matches = [];
+
+  // Yatay kontrol
+  for(let r=0; r<rows; r++) {
+    let count = 1;
+    for(let c=1; c<cols; c++) {
+      if(board[r][c] === board[r][c-1]) {
+        count++;
+      } else {
+        if(count >= 3) {
+          for(let k=c-count; k<c; k++) matches.push([r,k]);
+        }
+        count = 1;
+      }
+    }
+    if(count >=3) {
+      for(let k=cols-count; k<cols; k++) matches.push([r,k]);
+    }
+  }
+  // Dikey kontrol
+  for(let c=0; c<cols; c++) {
+    let count = 1;
+    for(let r=1; r<rows; r++) {
+      if(board[r][c] === board[r-1][c]) {
+        count++;
+      } else {
+        if(count >=3) {
+          for(let k=r-count; k<r; k++) matches.push([k,c]);
+        }
+        count=1;
+      }
+    }
+    if(count >=3) {
+      for(let k=rows-count; k<rows; k++) matches.push([k,c]);
+    }
+  }
+  return matches;
+}
+
+function removeMatches() {
+  const matches = findMatches();
+  if(matches.length === 0) return false;
+  for(const [r,c] of matches) {
+    board[r][c] = null;
+  }
+  score += matches.length * 10;
+  scoreEl.textContent = 'Skor: ' + score;
+  return true;
+}
+
+function applyGravity() {
   for(let c=0; c<cols; c++) {
     for(let r=rows-1; r>=0; r--) {
       if(board[r][c] === null) {
-        // Yukarıdan boşluk doldur
-        for(let rr = r - 1; rr >= 0; rr--) {
+        for(let rr=r-1; rr>=0; rr--) {
           if(board[rr][c] !== null) {
             board[r][c] = board[rr][c];
             board[rr][c] = null;
@@ -141,20 +202,29 @@ function gravity() {
   }
 }
 
-// Boş kalanları rastgele yeni blokla doldur
-function refill() {
+function refillBoard() {
   for(let r=0; r<rows; r++) {
     for(let c=0; c<cols; c++) {
       if(board[r][c] === null) {
-        board[r][c] = randomColorIndex();
+        board[r][c] = randomColor();
       }
     }
   }
 }
 
+function processMatches() {
+  if(removeMatches()) {
+    applyGravity();
+    refillBoard();
+    drawBoard();
+    // Biraz gecikmeli tekrar kontrol et (kaskad efekt)
+    setTimeout(processMatches, 300);
+  }
+}
+
 initBoard();
 drawBoard();
-
 </script>
+
 </body>
 </html>
