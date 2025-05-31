@@ -2,314 +2,159 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8" />
-<title>Basit Blok Oyunu - Skorlu</title>
+<title>Block Blast Benzeri Oyun</title>
 <style>
   body {
     background: #222;
     color: white;
     font-family: monospace;
     text-align: center;
-    margin: 0;
-    padding: 0;
-  }
-  canvas {
-    background: #000;
-    display: block;
-    margin: 20px auto;
-    border: 2px solid #555;
+    margin: 0; padding: 0;
   }
   #scoreboard {
     position: fixed;
     top: 5px;
     left: 5px;
-    text-align: left;
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 18px;
+  }
+  #game {
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: repeat(8, 50px);
+    grid-template-rows: repeat(8, 50px);
+    gap: 3px;
+    width: max-content;
+  }
+  .block {
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease;
   }
 </style>
 </head>
 <body>
-<h1>Basit Blok Oyunu (Tetris)</h1>
-<div id="scoreboard">
-  Skor: <span id="score">0</span><br />
-  En Yüksek Skor: <span id="highscore">0</span>
-</div>
-<canvas id="game" width="240" height="400"></canvas>
-<p>Yön tuşları ile oynayın: ← → ↓ ↑</p>
+<h1>Block Blast Benzeri Oyun</h1>
+<div id="scoreboard">Skor: 0</div>
+<div id="game"></div>
 
 <script>
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-const ROWS = 20;
-const COLS = 10;
-const BLOCK_SIZE = 20;
-
-ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
-
-const scoreElem = document.getElementById('score');
-const highscoreElem = document.getElementById('highscore');
-
+const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22'];
+const rows = 8;
+const cols = 8;
 let score = 0;
-let highscore = localStorage.getItem('okeyHighscore') || 0;
-highscoreElem.textContent = highscore;
 
-function createMatrix(w, h) {
-  const matrix = [];
-  while (h--) {
-    matrix.push(new Array(w).fill(0));
+const gameEl = document.getElementById('game');
+const scoreEl = document.getElementById('scoreboard');
+
+// Oyun tahtasını 2D dizi olarak tutacağız, her hücrede renk indeksi var
+let board = [];
+
+function randomColorIndex() {
+  return Math.floor(Math.random() * colors.length);
+}
+
+// Tahtayı doldur
+function initBoard() {
+  board = [];
+  for(let r=0; r<rows; r++) {
+    const row = [];
+    for(let c=0; c<cols; c++) {
+      row.push(randomColorIndex());
+    }
+    board.push(row);
   }
-  return matrix;
 }
 
-const arena = createMatrix(COLS, ROWS);
-
-const pieces = {
-  I: [
-    [[0,0,0,0],
-     [1,1,1,1],
-     [0,0,0,0],
-     [0,0,0,0]],
-    [[0,0,1,0],
-     [0,0,1,0],
-     [0,0,1,0],
-     [0,0,1,0]],
-  ],
-  O: [
-    [[2,2],
-     [2,2]]
-  ],
-  T: [
-    [[0,3,0],
-     [3,3,3],
-     [0,0,0]],
-    [[0,3,0],
-     [0,3,3],
-     [0,3,0]],
-    [[0,0,0],
-     [3,3,3],
-     [0,3,0]],
-    [[0,3,0],
-     [3,3,0],
-     [0,3,0]],
-  ],
-  L: [
-    [[0,0,4],
-     [4,4,4],
-     [0,0,0]],
-    [[0,4,0],
-     [0,4,0],
-     [0,4,4]],
-    [[0,0,0],
-     [4,4,4],
-     [4,0,0]],
-    [[4,4,0],
-     [0,4,0],
-     [0,4,0]],
-  ],
-  J: [
-    [[5,0,0],
-     [5,5,5],
-     [0,0,0]],
-    [[0,5,5],
-     [0,5,0],
-     [0,5,0]],
-    [[0,0,0],
-     [5,5,5],
-     [0,0,5]],
-    [[0,5,0],
-     [0,5,0],
-     [5,5,0]],
-  ],
-  S: [
-    [[0,6,6],
-     [6,6,0],
-     [0,0,0]],
-    [[0,6,0],
-     [0,6,6],
-     [0,0,6]],
-  ],
-  Z: [
-    [[7,7,0],
-     [0,7,7],
-     [0,0,0]],
-    [[0,0,7],
-     [0,7,7],
-     [0,7,0]],
-  ]
-};
-
-const colors = [
-  null,
-  '#00ffff',
-  '#ffff00',
-  '#aa00ff',
-  '#ff7700',
-  '#0000ff',
-  '#00ff00',
-  '#ff0000'
-];
-
-function drawMatrix(matrix, offset) {
-  matrix.forEach((row, y) => {
-    row.forEach((value, x) => {
-      if (value !== 0) {
-        ctx.fillStyle = colors[value];
-        ctx.fillRect(x + offset.x, y + offset.y, 1, 1);
-        ctx.strokeStyle = '#222';
-        ctx.lineWidth = 0.05;
-        ctx.strokeRect(x + offset.x, y + offset.y, 1, 1);
-      }
-    });
-  });
+// Tahtayı ekrana çiz
+function drawBoard() {
+  gameEl.innerHTML = '';
+  for(let r=0; r<rows; r++) {
+    for(let c=0; c<cols; c++) {
+      const block = document.createElement('div');
+      block.classList.add('block');
+      block.style.backgroundColor = colors[board[r][c]];
+      block.dataset.r = r;
+      block.dataset.c = c;
+      block.addEventListener('click', () => onBlockClick(r, c));
+      gameEl.appendChild(block);
+    }
+  }
 }
 
-function merge(arena, player) {
-  player.matrix.forEach((row, y) => {
-    row.forEach((value, x) => {
-      if (value !== 0) {
-        arena[y + player.pos.y][x + player.pos.x] = value;
-      }
-    });
-  });
+// Yan yana aynı renkte blokları bul ve patlat
+function onBlockClick(r, c) {
+  const colorIndex = board[r][c];
+  const toRemove = [];
+  const visited = Array.from({length: rows}, () => Array(cols).fill(false));
+
+  function dfs(rr, cc) {
+    if(rr < 0 || rr >= rows || cc < 0 || cc >= cols) return;
+    if(visited[rr][cc]) return;
+    if(board[rr][cc] !== colorIndex) return;
+    visited[rr][cc] = true;
+    toRemove.push([rr, cc]);
+    dfs(rr-1, cc);
+    dfs(rr+1, cc);
+    dfs(rr, cc-1);
+    dfs(rr, cc+1);
+  }
+
+  dfs(r,c);
+
+  if(toRemove.length < 3) {
+    // 3 bloktan azsa patlatma
+    alert('En az 3 aynı renkte blok seçmelisin!');
+    return;
+  }
+
+  // Patlat
+  for(const [rr, cc] of toRemove) {
+    board[rr][cc] = null; // boş
+  }
+
+  score += toRemove.length * 10;
+  scoreEl.textContent = 'Skor: ' + score;
+
+  gravity();
+  refill();
+  drawBoard();
 }
 
-function collide(arena, player) {
-  const m = player.matrix;
-  const o = player.pos;
-  for(let y = 0; y < m.length; ++y) {
-    for(let x = 0; x < m[y].length; ++x) {
-      if(m[y][x] !== 0 &&
-        (arena[y + o.y] &&
-        arena[y + o.y][x + o.x]) !== 0) {
-          return true;
+// Blokların aşağı kaymasını sağlar
+function gravity() {
+  for(let c=0; c<cols; c++) {
+    for(let r=rows-1; r>=0; r--) {
+      if(board[r][c] === null) {
+        // Yukarıdan boşluk doldur
+        for(let rr = r - 1; rr >= 0; rr--) {
+          if(board[rr][c] !== null) {
+            board[r][c] = board[rr][c];
+            board[rr][c] = null;
+            break;
+          }
         }
-    }
-  }
-  return false;
-}
-
-function playerReset() {
-  const piecesKeys = Object.keys(pieces);
-  const rand = piecesKeys[Math.floor(Math.random() * piecesKeys.length)];
-  player.matrix = pieces[rand][0];
-  player.pos.y = 0;
-  player.pos.x = Math.floor(COLS / 2) - Math.floor(player.matrix[0].length / 2);
-  player.rotationIndex = 0;
-  if(collide(arena, player)) {
-    arena.forEach(row => row.fill(0));
-    if(score > highscore) {
-      highscore = score;
-      localStorage.setItem('okeyHighscore', highscore);
-      highscoreElem.textContent = highscore;
-    }
-    score = 0;
-    scoreElem.textContent = score;
-  }
-}
-
-function playerRotate(dir) {
-  const m = player.matrix;
-  for(let y = 0; y < m.length; ++y) {
-    for(let x = 0; x < y; ++x) {
-      [m[x][y], m[y][x]] = [m[y][x], m[x][y]];
-    }
-  }
-  if (dir > 0) {
-    m.forEach(row => row.reverse());
-  } else {
-    m.reverse();
-  }
-}
-
-function rotatePlayer(dir) {
-  const pos = player.pos.x;
-  let offset = 1;
-  playerRotate(dir);
-  while(collide(arena, player)) {
-    player.pos.x += offset;
-    offset = -(offset + (offset > 0 ? 1 : -1));
-    if (offset > player.matrix[0].length) {
-      playerRotate(-dir);
-      player.pos.x = pos;
-      return;
-    }
-  }
-}
-
-function arenaSweep() {
-  outer: for(let y = arena.length - 1; y >= 0; --y) {
-    for(let x = 0; x < arena[y].length; ++x) {
-      if (arena[y][x] === 0) {
-        continue outer;
       }
     }
-    const row = arena.splice(y, 1)[0].fill(0);
-    arena.unshift(row);
-    y++;
-    score += 10;           // Satır temizleyince skor artar
-    scoreElem.textContent = score;
   }
 }
 
-function draw() {
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, COLS, ROWS);
-
-  drawMatrix(arena, {x:0, y:0});
-  drawMatrix(player.matrix, player.pos);
-}
-
-let dropCounter = 0;
-let dropInterval = 1000;
-let lastTime = 0;
-
-function update(time = 0) {
-  const deltaTime = time - lastTime;
-  lastTime = time;
-  dropCounter += deltaTime;
-  if(dropCounter > dropInterval) {
-    player.pos.y++;
-    if(collide(arena, player)) {
-      player.pos.y--;
-      merge(arena, player);
-      playerReset();
-      arenaSweep();
+// Boş kalanları rastgele yeni blokla doldur
+function refill() {
+  for(let r=0; r<rows; r++) {
+    for(let c=0; c<cols; c++) {
+      if(board[r][c] === null) {
+        board[r][c] = randomColorIndex();
+      }
     }
-    dropCounter = 0;
   }
-  draw();
-  requestAnimationFrame(update);
 }
 
-const player = {
-  pos: {x:0, y:0},
-  matrix: null,
-  rotationIndex: 0,
-};
+initBoard();
+drawBoard();
 
-playerReset();
-update();
-
-document.addEventListener('keydown', event => {
-  if(event.key === 'ArrowLeft') {
-    player.pos.x--;
-    if(collide(arena, player)) player.pos.x++;
-  } else if(event.key === 'ArrowRight') {
-    player.pos.x++;
-    if(collide(arena, player)) player.pos.x--;
-  } else if(event.key === 'ArrowDown') {
-    player.pos.y++;
-    if(collide(arena, player)) {
-      player.pos.y--;
-      merge(arena, player);
-      playerReset();
-      arenaSweep();
-    }
-    dropCounter = 0;
-  } else if(event.key === 'ArrowUp') {
-    rotatePlayer(1);
-  }
-});
 </script>
 </body>
 </html>
